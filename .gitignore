@@ -1,0 +1,21 @@
+# Godot editor/runtime artifacts
+.godot/
+.import/
+export_presets.cfg
+
+# Mono / .NET artifacts
+.mono/
+bin/
+obj/
+
+# OS / editor noise
+*.tmp
+*.log
+Thumbs.db
+Desktop.ini
+
+# Temporary review or local scratch
+Tmp/
+
+# Local workflow records
+agent_workflow/
