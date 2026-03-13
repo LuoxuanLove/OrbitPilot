@@ -95,6 +95,7 @@ func _request_json_with_tls(
 			"phase": "request_completed",
 			"url": url,
 			"unsafe_tls": unsafe_tls,
+			"transport": "native_unsafe" if unsafe_tls else "native",
 			"result_code": result_code,
 			"result_name": _request_result_name(result_code),
 			"response_code": response_code,
@@ -107,6 +108,7 @@ func _request_json_with_tls(
 			"phase": "request_completed",
 			"url": url,
 			"unsafe_tls": unsafe_tls,
+			"transport": "native_unsafe" if unsafe_tls else "native",
 			"response_code": response_code,
 			"body": parsed,
 		}
@@ -163,6 +165,7 @@ func _stream_sse_json_with_tls(
 			"phase": "connect_to_host",
 			"url": url,
 			"unsafe_tls": unsafe_tls,
+			"transport": "native_sse_unsafe" if unsafe_tls else "native_sse",
 			"code": err,
 		}
 
@@ -192,6 +195,7 @@ func _stream_sse_json_with_tls(
 			"phase": "await_connect",
 			"url": url,
 			"unsafe_tls": unsafe_tls,
+			"transport": "native_sse_unsafe" if unsafe_tls else "native_sse",
 			"status": connect_status,
 			"status_name": _client_status_name(connect_status),
 		}
@@ -207,6 +211,7 @@ func _stream_sse_json_with_tls(
 			"phase": "client_request",
 			"url": url,
 			"unsafe_tls": unsafe_tls,
+			"transport": "native_sse_unsafe" if unsafe_tls else "native_sse",
 			"code": err,
 		}
 
@@ -236,6 +241,7 @@ func _stream_sse_json_with_tls(
 			"phase": "await_headers",
 			"url": url,
 			"unsafe_tls": unsafe_tls,
+			"transport": "native_sse_unsafe" if unsafe_tls else "native_sse",
 			"status": header_status,
 			"status_name": _client_status_name(header_status),
 		}
@@ -249,6 +255,7 @@ func _stream_sse_json_with_tls(
 			"phase": "response_headers",
 			"url": url,
 			"unsafe_tls": unsafe_tls,
+			"transport": "native_sse_unsafe" if unsafe_tls else "native_sse",
 			"response_code": response_code,
 		}
 
@@ -271,7 +278,7 @@ func _stream_sse_json_with_tls(
 				buffer = str(drain.get("remaining", ""))
 				if bool(drain.get("done", false)):
 					client.close()
-					var done_result := {"success": true}
+					var done_result := {"success": true, "transport": "native_sse_unsafe" if unsafe_tls else "native_sse"}
 					if unsafe_tls:
 						done_result["tls_unsafe_fallback"] = true
 					return done_result
@@ -280,7 +287,7 @@ func _stream_sse_json_with_tls(
 			var drain := _drain_sse_buffer(buffer, event_callback)
 			buffer = str(drain.get("remaining", ""))
 			client.close()
-			var connected_result := {"success": true}
+			var connected_result := {"success": true, "transport": "native_sse_unsafe" if unsafe_tls else "native_sse"}
 			if unsafe_tls:
 				connected_result["tls_unsafe_fallback"] = true
 			return connected_result
@@ -288,7 +295,7 @@ func _stream_sse_json_with_tls(
 			var drain := _drain_sse_buffer(buffer, event_callback)
 			buffer = str(drain.get("remaining", ""))
 			client.close()
-			var disconnected_result := {"success": true}
+			var disconnected_result := {"success": true, "transport": "native_sse_unsafe" if unsafe_tls else "native_sse"}
 			if unsafe_tls:
 				disconnected_result["tls_unsafe_fallback"] = true
 			return disconnected_result
@@ -302,6 +309,7 @@ func _stream_sse_json_with_tls(
 				"phase": "stream_body",
 				"url": url,
 				"unsafe_tls": unsafe_tls,
+				"transport": "native_sse_unsafe" if unsafe_tls else "native_sse",
 				"status": status,
 				"status_name": _client_status_name(status),
 			}
@@ -311,7 +319,7 @@ func _stream_sse_json_with_tls(
 			return {"success": false, "error": "host_node_tree_missing"}
 		await tree.process_frame
 	client.close()
-	return {"success": false, "error": "stream_ended_unexpectedly"}
+	return {"success": false, "error": "stream_ended_unexpectedly", "transport": "native_sse_unsafe" if unsafe_tls else "native_sse"}
 
 
 func _drain_sse_buffer(buffer: String, event_callback: Callable) -> Dictionary:

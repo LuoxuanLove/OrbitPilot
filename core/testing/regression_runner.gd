@@ -208,21 +208,15 @@ func _test_curl_fallback_logic() -> Dictionary:
 	var adapter = adapter_script.new()
 	adapter.setup(_host_node)
 	
-	# Test 1: Native transport tag
+	# Test 1: Native transport tag (should be present in error result too)
 	var res_native = await adapter._request_json("http://127.0.0.1:9999/invalid", HTTPClient.METHOD_GET, [], "")
-	# It might fail (likely), but we want to see the transport tag if it reached the completion part
-	# or at least check if the logic for adding tags is there.
-	# Actually, my edit added the tag to the success path.
+	if not res_native.has("transport"):
+		return {"passed": false, "detail": "native_transport_tag_missing", "data": res_native}
 	
-	# Test 2: Curl availability (passive check)
-	var curl_path := "curl.exe" if OS.get_name() == "Windows" else "curl"
-	var output := []
-	var exit = OS.execute(curl_path, ["--version"], output, true, true)
-	if exit != OK:
-		# Curl is missing, but the test passes if we correctly identify it later
-		pass
+	if res_native.get("transport") != "native":
+		return {"passed": false, "detail": "unexpected_transport_tag", "data": res_native}
 
-	return {"passed": true, "detail": "logic_verified_manually"}
+	return {"passed": true, "detail": "logic_verified"}
 
 
 func _yield_frame() -> void:
