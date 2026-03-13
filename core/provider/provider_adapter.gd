@@ -113,6 +113,9 @@ func _request_json_with_tls(
 	var response := {"success": true, "response_code": response_code, "body": parsed}
 	if unsafe_tls:
 		response["tls_unsafe_fallback"] = true
+		response["transport"] = "native_unsafe"
+	else:
+		response["transport"] = "native"
 	return response
 
 
@@ -445,7 +448,11 @@ func _request_json_via_curl(
 	args.append("@%s" % payload_path)
 	args.append(url)
 
-	var exit_code := OS.execute(CURL_EXECUTABLE, args, output_lines, true, true)
+	var executable := CURL_EXECUTABLE
+	if OS.get_name() != "Windows":
+		executable = "curl"
+
+	var exit_code := OS.execute(executable, args, output_lines, true, true)
 	_delete_temp_file(payload_path)
 
 	var stdout_text := "\n".join(_stringify_array(output_lines))
