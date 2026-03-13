@@ -23,7 +23,7 @@ func send_chat(provider_config: Dictionary, messages: Array, tools: Array) -> Di
 	if api_key.is_empty():
 		return {"success": false, "error": "missing_api_key"}
 
-	var base_url := str(provider_config.get("base_url", "https://api.openai.com/v1")).trim_suffix("/")
+	var base_url := _normalize_chat_base_url(str(provider_config.get("base_url", "https://api.openai.com/v1")))
 	var payload := {
 		"model": str(provider_config.get("model", "gpt-4.1-mini")),
 		"messages": messages,
@@ -75,7 +75,7 @@ func send_chat_stream(
 	if api_key.is_empty():
 		return {"success": false, "error": "missing_api_key"}
 
-	var base_url := str(provider_config.get("base_url", "https://api.openai.com/v1")).trim_suffix("/")
+	var base_url := _normalize_chat_base_url(str(provider_config.get("base_url", "https://api.openai.com/v1")))
 	var payload := {
 		"model": str(provider_config.get("model", "gpt-4.1-mini")),
 		"messages": messages,
@@ -216,6 +216,17 @@ func _resolve_api_key(config: Dictionary) -> String:
 	if env_key.is_empty():
 		return ""
 	return OS.get_environment(env_key).strip_edges()
+
+
+func _normalize_chat_base_url(raw_url: String) -> String:
+	var base_url := raw_url.strip_edges().trim_suffix("/")
+	if base_url.is_empty():
+		base_url = "https://api.openai.com/v1"
+	if base_url.ends_with("/chat/completions"):
+		base_url = base_url.trim_suffix("/chat/completions")
+	if base_url == "https://api.deepseek.com":
+		return "%s/v1" % base_url
+	return base_url
 
 
 func _ensure_adapter() -> bool:

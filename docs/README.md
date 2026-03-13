@@ -41,6 +41,4 @@
 
 - `plugin.gd` 是装配根，并内联了 `DockController`。
 - `ui/orbit_dock.tscn` 当前是纯 UI 场景。
-- `ui/orbit_dock.gd` 与 `ui/orbit_dock_controller.gd` 保留在仓库中，但不是当前主运行路径。
-
-后续若要清理或重构 UI，先以 `plugin.gd` 中的 `DockController` 为准更新文档与代码。
+后续重构计划将 `DockController` 提取到 `ui/dock_controller.gd` 并拆分为 5 个页面控制器（见 `agent_workflow/10_开发计划/`）。

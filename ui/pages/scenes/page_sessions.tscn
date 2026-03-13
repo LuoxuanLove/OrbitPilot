@@ -1,0 +1,108 @@
+[gd_scene load_steps=1 format=3]
+
+[node name="PageSessions" type="VBoxContainer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="SessionsTitle" type="Label" parent="."]
+layout_mode = 2
+text = "Sessions"
+
+[node name="SessionManagePanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SessionManage" type="VBoxContainer" parent="SessionManagePanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="SessionActionRow" type="HBoxContainer" parent="SessionManagePanel/SessionManage"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NewSessionButtonPage" type="Button" parent="SessionManagePanel/SessionManage/SessionActionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "New Session"
+
+[node name="OpenSessionButton" type="Button" parent="SessionManagePanel/SessionManage/SessionActionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Open Selected"
+
+[node name="ArchiveSessionButtonPage" type="Button" parent="SessionManagePanel/SessionManage/SessionActionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Archive Selected"
+
+[node name="DeleteArchivedButton" type="Button" parent="SessionManagePanel/SessionManage/SessionActionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Delete Archived"
+
+[node name="SessionRenameRow" type="HBoxContainer" parent="SessionManagePanel/SessionManage"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RenameSessionEdit" type="LineEdit" parent="SessionManagePanel/SessionManage/SessionRenameRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Rename selected session"
+
+[node name="RenameSessionButton" type="Button" parent="SessionManagePanel/SessionManage/SessionRenameRow"]
+layout_mode = 2
+text = "Rename"
+
+[node name="SessionColumns" type="HSplitContainer" parent="SessionManagePanel/SessionManage"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ActiveSessionsPanel" type="PanelContainer" parent="SessionManagePanel/SessionManage/SessionColumns"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ActiveSessionsBox" type="VBoxContainer" parent="SessionManagePanel/SessionManage/SessionColumns/ActiveSessionsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ActiveSessionsLabel" type="Label" parent="SessionManagePanel/SessionManage/SessionColumns/ActiveSessionsPanel/ActiveSessionsBox"]
+layout_mode = 2
+text = "Active"
+
+[node name="ActiveSessionsList" type="ItemList" parent="SessionManagePanel/SessionManage/SessionColumns/ActiveSessionsPanel/ActiveSessionsBox"]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ArchivedSessionsPanel" type="PanelContainer" parent="SessionManagePanel/SessionManage/SessionColumns"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ArchivedSessionsBox" type="VBoxContainer" parent="SessionManagePanel/SessionManage/SessionColumns/ArchivedSessionsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ArchivedSessionsLabel" type="Label" parent="SessionManagePanel/SessionManage/SessionColumns/ArchivedSessionsPanel/ArchivedSessionsBox"]
+layout_mode = 2
+text = "Archived"
+
+[node name="ArchivedSessionsList" type="ItemList" parent="SessionManagePanel/SessionManage/SessionColumns/ArchivedSessionsPanel/ArchivedSessionsBox"]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

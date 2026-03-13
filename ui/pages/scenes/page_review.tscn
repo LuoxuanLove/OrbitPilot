@@ -1,0 +1,47 @@
+[gd_scene load_steps=1 format=3]
+
+[node name="PageReview" type="VBoxContainer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="ReviewTop" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Approve or reject pending change sets."
+
+[node name="ChangeSetSelect" type="OptionButton" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChangeSetPreviewPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ChangeSetPreview" type="RichTextLabel" parent="ChangeSetPreviewPanel"]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = false
+
+[node name="ReviewButtons" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="ApproveButton" type="Button" parent="ReviewButtons"]
+layout_mode = 2
+text = "Approve"
+
+[node name="RejectButton" type="Button" parent="ReviewButtons"]
+layout_mode = 2
+text = "Reject"

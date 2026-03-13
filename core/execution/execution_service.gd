@@ -26,7 +26,12 @@ func execute_turn(
 		return {"success": false, "error": "provider_not_found"}
 
 	var provider = _providers[provider_id]
-	_emit_event(event_callback, run_id, "status", {"message": "provider_request_started"})
+	_emit_event(event_callback, run_id, "status", {
+		"message": "provider_request_started",
+		"provider_id": provider_id,
+		"model": str(provider_config.get("model", "")),
+		"base_url": str(provider_config.get("base_url", "")),
+	})
 	var provider_result: Dictionary = await provider.send_chat_stream(
 		provider_config,
 		messages,
@@ -42,10 +47,36 @@ func execute_turn(
 		if _is_cancelled(run_id):
 			_clear_cancel(run_id)
 			return {"success": false, "error": "run_cancelled"}
+		_emit_event(event_callback, run_id, "status", {
+			"message": "provider_stream_failed",
+			"provider_id": provider_id,
+			"details": _build_provider_failure_summary(provider_result),
+		})
 		# Stream path failed, fallback to non-streaming once.
+		_emit_event(event_callback, run_id, "status", {
+			"message": "provider_request_fallback_non_stream",
+			"provider_id": provider_id,
+		})
 		provider_result = await provider.send_chat(provider_config, messages, available_tools)
+		if not bool(provider_result.get("success", false)):
+			_emit_event(event_callback, run_id, "status", {
+				"message": "provider_non_stream_failed",
+				"provider_id": provider_id,
+				"details": _build_provider_failure_summary(provider_result),
+			})
 	if not bool(provider_result.get("success", false)):
 		return provider_result
+	if str(provider_result.get("transport", "")).strip_edges() == "curl":
+		_emit_event(event_callback, run_id, "status", {
+			"message": "provider_request_used_transport",
+			"provider_id": provider_id,
+			"details": "transport=curl",
+		})
+	if bool(provider_result.get("tls_unsafe_fallback", false)):
+		_emit_event(event_callback, run_id, "status", {
+			"message": "provider_request_used_unsafe_tls_fallback",
+			"provider_id": provider_id,
+		})
 	if _is_cancelled(run_id):
 		_clear_cancel(run_id)
 		return {"success": false, "error": "run_cancelled"}
@@ -210,3 +241,40 @@ func _is_mutating_tool(tool_id: String) -> bool:
 	if tool_id.find("copy") >= 0:
 		return true
 	return false
+
+
+func _build_provider_failure_summary(result: Dictionary) -> String:
+	var parts := PackedStringArray()
+	var error_code := str(result.get("error", "")).strip_edges()
+	if not error_code.is_empty():
+		parts.append("error=%s" % error_code)
+	var phase := str(result.get("phase", "")).strip_edges()
+	if not phase.is_empty():
+		parts.append("phase=%s" % phase)
+	var result_code := int(result.get("result_code", 0))
+	if result_code > 0:
+		parts.append("result=%d" % result_code)
+	var result_name := str(result.get("result_name", "")).strip_edges()
+	if not result_name.is_empty():
+		parts.append("result_name=%s" % result_name)
+	var status := int(result.get("status", 0))
+	if status > 0:
+		parts.append("status=%d" % status)
+	var status_name := str(result.get("status_name", "")).strip_edges()
+	if not status_name.is_empty():
+		parts.append("status_name=%s" % status_name)
+	var code := int(result.get("code", 0))
+	if code > 0:
+		parts.append("code=%d" % code)
+	var response_code := int(result.get("response_code", 0))
+	if response_code > 0:
+		parts.append("http=%d" % response_code)
+	var transport := str(result.get("transport", "")).strip_edges()
+	if not transport.is_empty():
+		parts.append("transport=%s" % transport)
+	if result.has("unsafe_tls"):
+		parts.append("unsafe_tls=%s" % str(bool(result.get("unsafe_tls", false))))
+	var url := str(result.get("url", "")).strip_edges()
+	if not url.is_empty():
+		parts.append("url=%s" % url)
+	return ", ".join(parts)

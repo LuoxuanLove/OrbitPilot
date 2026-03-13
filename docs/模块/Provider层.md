@@ -61,7 +61,7 @@ DeepSeek 当前不是独立 Provider，而是一个预设 Provider 配置。
 字段：
 
 - `id`: `deepseek`
-- `base_url`: `https://api.deepseek.com`
+- `base_url`: `https://api.deepseek.com/v1`
 - `model`: `deepseek-chat`
 - `api_key_env`: `DEEPSEEK_API_KEY`
 

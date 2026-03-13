@@ -1,0 +1,108 @@
+[gd_scene load_steps=1 format=3]
+
+[node name="PageCodex" type="VBoxContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CodexTop" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="TitleBlock" type="VBoxContainer" parent="CodexTop"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="SessionPicker" type="OptionButton" parent="CodexTop/TitleBlock"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 0)
+
+[node name="ProviderBadge" type="Label" parent="CodexTop"]
+visible = false
+layout_mode = 2
+text = "openai_compatible"
+
+[node name="PolicyBadge" type="Label" parent="CodexTop"]
+visible = false
+layout_mode = 2
+text = "propose"
+
+[node name="ConversationPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ConversationLog" type="RichTextLabel" parent="ConversationPanel"]
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = false
+scroll_following = true
+
+[node name="ComposerPanel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(0, 210)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Composer" type="VBoxContainer" parent="ComposerPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="PromptEdit" type="TextEdit" parent="ComposerPanel/Composer"]
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Ask Orbit to inspect, propose, or prepare a change..."
+
+[node name="ComposerFooter" type="HBoxContainer" parent="ComposerPanel/Composer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="ComposerMeta" type="HBoxContainer" parent="ComposerPanel/Composer/ComposerFooter"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme_override_constants/separation = 8
+
+[node name="ProviderSelect" type="OptionButton" parent="ComposerPanel/Composer/ComposerFooter/ComposerMeta"]
+layout_mode = 2
+custom_minimum_size = Vector2(160, 0)
+
+[node name="PolicySelect" type="OptionButton" parent="ComposerPanel/Composer/ComposerFooter/ComposerMeta"]
+layout_mode = 2
+custom_minimum_size = Vector2(150, 0)
+
+[node name="ValidationBadge" type="Label" parent="ComposerPanel/Composer/ComposerFooter/ComposerMeta"]
+layout_mode = 2
+size_flags_horizontal = 3
+vertical_alignment = 1
+text = "Validation pending"
+
+[node name="ComposerActions" type="HBoxContainer" parent="ComposerPanel/Composer/ComposerFooter"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="SendPromptButton" type="Button" parent="ComposerPanel/Composer/ComposerFooter/ComposerActions"]
+layout_mode = 2
+custom_minimum_size = Vector2(48, 48)
+text = "Send"
+
+[node name="CancelRunButton" type="Button" parent="ComposerPanel/Composer/ComposerFooter/ComposerActions"]
+layout_mode = 2
+custom_minimum_size = Vector2(90, 48)
+text = "Cancel"

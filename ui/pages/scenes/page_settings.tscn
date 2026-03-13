@@ -1,0 +1,108 @@
+[gd_scene load_steps=1 format=3]
+
+[node name="PageSettings" type="VBoxContainer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="OverviewStatusPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="OverviewStatus" type="RichTextLabel" parent="OverviewStatusPanel"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+bbcode_enabled = false
+
+[node name="SettingsPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Settings" type="VBoxContainer" parent="SettingsPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="ModelEdit" type="LineEdit" parent="SettingsPanel/Settings"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Model"
+
+[node name="BaseUrlEdit" type="LineEdit" parent="SettingsPanel/Settings"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Provider Base URL"
+
+[node name="ApiKeyRow" type="HBoxContainer" parent="SettingsPanel/Settings"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="ApiKeyEdit" type="LineEdit" parent="SettingsPanel/Settings/ApiKeyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "API Key (leave empty to use env)"
+secret = true
+
+[node name="ToggleApiKeyButton" type="Button" parent="SettingsPanel/Settings/ApiKeyRow"]
+layout_mode = 2
+text = "Show Key"
+
+[node name="RemoteIdEdit" type="LineEdit" parent="SettingsPanel/Settings"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Remote server id"
+text = "main"
+
+[node name="RemoteUrlEdit" type="LineEdit" parent="SettingsPanel/Settings"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Remote MCP endpoint"
+text = "http://127.0.0.1:3000"
+
+[node name="SettingsButtons" type="HBoxContainer" parent="SettingsPanel/Settings"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="SaveSettingsButton" type="Button" parent="SettingsPanel/Settings/SettingsButtons"]
+layout_mode = 2
+text = "Save"
+
+[node name="RefreshRemoteButton" type="Button" parent="SettingsPanel/Settings/SettingsButtons"]
+layout_mode = 2
+text = "Sync MCP"
+
+[node name="RuntimeLogPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="RuntimeLogContainer" type="VBoxContainer" parent="RuntimeLogPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="RuntimeLogButtons" type="HBoxContainer" parent="RuntimeLogPanel/RuntimeLogContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CopyRuntimeLogButton" type="Button" parent="RuntimeLogPanel/RuntimeLogContainer/RuntimeLogButtons"]
+layout_mode = 2
+text = "Copy Logs"
+
+[node name="RuntimeLog" type="RichTextLabel" parent="RuntimeLogPanel/RuntimeLogContainer"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = false

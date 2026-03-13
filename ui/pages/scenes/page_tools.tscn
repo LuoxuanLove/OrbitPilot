@@ -1,0 +1,45 @@
+[gd_scene load_steps=1 format=3]
+
+[node name="PageTools" type="VBoxContainer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="ToolTop" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Run local or remote tools directly."
+
+[node name="ToolSelect" type="OptionButton" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ToolArgsEdit" type="TextEdit" parent="."]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "{\"path\":\"res://README.md\"}"
+
+[node name="RunToolButton" type="Button" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Run Tool"
+
+[node name="ToolResultPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ToolResult" type="RichTextLabel" parent="ToolResultPanel"]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = false
