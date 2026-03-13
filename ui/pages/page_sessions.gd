@@ -74,28 +74,39 @@ func _node(path: String):
 
 
 func _assign_nodes() -> void:
-	_new_session_button = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionActionRow/NewSessionButtonPage")
-	_open_session_button = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionActionRow/OpenSessionButton")
-	_archive_session_button = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionActionRow/ArchiveSessionButtonPage")
-	_delete_archived_button = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionActionRow/DeleteArchivedButton")
-	_rename_session_edit = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionRenameRow/RenameSessionEdit")
-	_rename_session_button = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionRenameRow/RenameSessionButton")
-	_active_sessions_list = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionColumns/ActiveSessionsPanel/ActiveSessionsBox/ActiveSessionsList")
-	_archived_sessions_list = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionColumns/ArchivedSessionsPanel/ArchivedSessionsBox/ArchivedSessionsList")
-	_session_manage_panel = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel")
-	_active_sessions_panel = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionColumns/ActiveSessionsPanel")
-	_archived_sessions_panel = _node("RootMargin/Root/PageStack/PageSessions/SessionManagePanel/SessionManage/SessionColumns/ArchivedSessionsPanel")
+	if _root == null:
+		push_error("[OrbitPageSessions] _root is null in _assign_nodes")
+		return
+	_new_session_button = _node("SessionManagePanel/SessionManage/SessionActionRow/NewSessionButtonPage")
+	_open_session_button = _node("SessionManagePanel/SessionManage/SessionActionRow/OpenSessionButton")
+	_archive_session_button = _node("SessionManagePanel/SessionManage/SessionActionRow/ArchiveSessionButtonPage")
+	_delete_archived_button = _node("SessionManagePanel/SessionManage/SessionActionRow/DeleteArchivedButton")
+	_rename_session_edit = _node("SessionManagePanel/SessionManage/SessionRenameRow/RenameSessionEdit")
+	_rename_session_button = _node("SessionManagePanel/SessionManage/SessionRenameRow/RenameSessionButton")
+	_active_sessions_list = _node("SessionManagePanel/SessionManage/SessionColumns/ActiveSessionsPanel/ActiveSessionsBox/ActiveSessionsList")
+	_archived_sessions_list = _node("SessionManagePanel/SessionManage/SessionColumns/ArchivedSessionsPanel/ArchivedSessionsBox/ArchivedSessionsList")
+	_session_manage_panel = _node("SessionManagePanel")
+	_active_sessions_panel = _node("SessionManagePanel/SessionManage/SessionColumns/ActiveSessionsPanel")
+	_archived_sessions_panel = _node("SessionManagePanel/SessionManage/SessionColumns/ArchivedSessionsPanel")
 
 
 func _bind_events() -> void:
-	_new_session_button.pressed.connect(_on_new_session_pressed)
-	_open_session_button.pressed.connect(_on_open_selected_session_pressed)
-	_archive_session_button.pressed.connect(_on_archive_selected_session_pressed)
-	_delete_archived_button.pressed.connect(_on_delete_archived_session_pressed)
-	_rename_session_button.pressed.connect(_on_rename_session_pressed)
-	_rename_session_edit.text_changed.connect(_on_rename_text_changed)
-	_active_sessions_list.item_selected.connect(_on_active_sessions_selected)
-	_archived_sessions_list.item_selected.connect(_on_archived_sessions_selected)
+	if _new_session_button:
+		_new_session_button.pressed.connect(_on_new_session_pressed)
+	if _open_session_button:
+		_open_session_button.pressed.connect(_on_open_selected_session_pressed)
+	if _archive_session_button:
+		_archive_session_button.pressed.connect(_on_archive_selected_session_pressed)
+	if _delete_archived_button:
+		_delete_archived_button.pressed.connect(_on_delete_archived_session_pressed)
+	if _rename_session_button:
+		_rename_session_button.pressed.connect(_on_rename_session_pressed)
+	if _rename_session_edit:
+		_rename_session_edit.text_changed.connect(_on_rename_text_changed)
+	if _active_sessions_list:
+		_active_sessions_list.item_selected.connect(_on_active_sessions_selected)
+	if _archived_sessions_list:
+		_archived_sessions_list.item_selected.connect(_on_archived_sessions_selected)
 
 
 func _on_new_session_pressed() -> void:

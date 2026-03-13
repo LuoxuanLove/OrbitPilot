@@ -54,27 +54,34 @@ func _node(path: String):
 
 
 func _assign_nodes() -> void:
-	_overview_status_panel = _node("RootMargin/Root/PageStack/PageSettings/OverviewStatusPanel")
-	_overview_status = _node("RootMargin/Root/PageStack/PageSettings/OverviewStatusPanel/OverviewStatus")
-	_settings_panel = _node("RootMargin/Root/PageStack/PageSettings/SettingsPanel")
-	_model_edit = _node("RootMargin/Root/PageStack/PageSettings/SettingsPanel/Settings/ModelEdit")
-	_base_url_edit = _node("RootMargin/Root/PageStack/PageSettings/SettingsPanel/Settings/BaseUrlEdit")
-	_api_key_edit = _node("RootMargin/Root/PageStack/PageSettings/SettingsPanel/Settings/ApiKeyRow/ApiKeyEdit")
-	_toggle_api_key_button = _node("RootMargin/Root/PageStack/PageSettings/SettingsPanel/Settings/ApiKeyRow/ToggleApiKeyButton")
-	_remote_id_edit = _node("RootMargin/Root/PageStack/PageSettings/SettingsPanel/Settings/RemoteIdEdit")
-	_remote_url_edit = _node("RootMargin/Root/PageStack/PageSettings/SettingsPanel/Settings/RemoteUrlEdit")
-	_save_button = _node("RootMargin/Root/PageStack/PageSettings/SettingsPanel/Settings/SettingsButtons/SaveSettingsButton")
-	_refresh_remote_button = _node("RootMargin/Root/PageStack/PageSettings/SettingsPanel/Settings/SettingsButtons/RefreshRemoteButton")
-	_runtime_log_panel = _node("RootMargin/Root/PageStack/PageSettings/RuntimeLogPanel")
-	_copy_runtime_log_button = _node("RootMargin/Root/PageStack/PageSettings/RuntimeLogPanel/RuntimeLogContainer/RuntimeLogButtons/CopyRuntimeLogButton")
-	_runtime_log = _node("RootMargin/Root/PageStack/PageSettings/RuntimeLogPanel/RuntimeLogContainer/RuntimeLog")
+	if _root == null:
+		push_error("[OrbitPageSettings] _root is null in _assign_nodes")
+		return
+	_overview_status_panel = _node("OverviewStatusPanel")
+	_overview_status = _node("OverviewStatusPanel/OverviewStatus")
+	_settings_panel = _node("SettingsPanel")
+	_model_edit = _node("SettingsPanel/Settings/ModelEdit")
+	_base_url_edit = _node("SettingsPanel/Settings/BaseUrlEdit")
+	_api_key_edit = _node("SettingsPanel/Settings/ApiKeyRow/ApiKeyEdit")
+	_toggle_api_key_button = _node("SettingsPanel/Settings/ApiKeyRow/ToggleApiKeyButton")
+	_remote_id_edit = _node("SettingsPanel/Settings/RemoteIdEdit")
+	_remote_url_edit = _node("SettingsPanel/Settings/RemoteUrlEdit")
+	_save_button = _node("SettingsPanel/Settings/SettingsButtons/SaveSettingsButton")
+	_refresh_remote_button = _node("SettingsPanel/Settings/SettingsButtons/RefreshRemoteButton")
+	_runtime_log_panel = _node("RuntimeLogPanel")
+	_copy_runtime_log_button = _node("RuntimeLogPanel/RuntimeLogContainer/RuntimeLogButtons/CopyRuntimeLogButton")
+	_runtime_log = _node("RuntimeLogPanel/RuntimeLogContainer/RuntimeLog")
 
 
 func _bind_events() -> void:
-	_save_button.pressed.connect(_on_save_settings_pressed)
-	_refresh_remote_button.pressed.connect(_on_refresh_remote_pressed)
-	_copy_runtime_log_button.pressed.connect(_on_copy_runtime_log_pressed)
-	_toggle_api_key_button.pressed.connect(_on_toggle_api_key_visibility_pressed)
+	if _save_button:
+		_save_button.pressed.connect(_on_save_settings_pressed)
+	if _refresh_remote_button:
+		_refresh_remote_button.pressed.connect(_on_refresh_remote_pressed)
+	if _copy_runtime_log_button:
+		_copy_runtime_log_button.pressed.connect(_on_copy_runtime_log_pressed)
+	if _toggle_api_key_button:
+		_toggle_api_key_button.pressed.connect(_on_toggle_api_key_visibility_pressed)
 
 
 func _on_refresh_remote_pressed() -> void:

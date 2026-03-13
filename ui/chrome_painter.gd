@@ -12,11 +12,11 @@ func setup(editor_plugin: EditorPlugin, root: Control) -> void:
 
 
 func paint_chrome(nav_refs: Dictionary, page_panels: Dictionary) -> void:
-	var muted := Color("9aa3b2")
+	var muted := Color("8b949e")
 	var accent := _get_editor_accent()
-	var composer_bg := _mix_with(accent, Color("141b26"), 0.14)
-	var chrome_bg := composer_bg
-	var panel_bg := _mix_with(accent, Color("151922"), 0.08)
+	var chrome_bg := Color("0d1117")
+	var composer_bg := Color("1c2128")
+	var panel_bg := Color("161b22")
 	var status_pill: Label = nav_refs.get("status_pill")
 	var validation_badge: Label = nav_refs.get("validation_badge")
 	var runtime_log: RichTextLabel = nav_refs.get("runtime_log")
@@ -29,6 +29,19 @@ func paint_chrome(nav_refs: Dictionary, page_panels: Dictionary) -> void:
 		validation_badge.add_theme_color_override("font_color", muted)
 	if runtime_log != null:
 		runtime_log.add_theme_color_override("default_color", muted)
+		var style := StyleBoxFlat.new()
+		style.bg_color = panel_bg
+		style.border_color = Color(accent.r, accent.g, accent.b, 0.1)
+		style.set_border_width_all(1)
+		style.corner_radius_top_left = 8
+		style.corner_radius_top_right = 8
+		style.corner_radius_bottom_left = 8
+		style.corner_radius_bottom_right = 8
+		style.content_margin_left = 12
+		style.content_margin_top = 12
+		style.content_margin_right = 12
+		style.content_margin_bottom = 12
+		runtime_log.add_theme_stylebox_override("normal", style)
 	if session_picker != null:
 		session_picker.add_theme_color_override("font_color", muted)
 		session_picker.add_theme_stylebox_override("normal", _build_subtle_stylebox(chrome_bg))
@@ -36,22 +49,22 @@ func paint_chrome(nav_refs: Dictionary, page_panels: Dictionary) -> void:
 		session_picker.add_theme_stylebox_override("pressed", _build_subtle_stylebox(_mix_with(accent, chrome_bg, 0.14)))
 		session_picker.add_theme_stylebox_override("focus", _build_subtle_stylebox(_mix_with(accent, chrome_bg, 0.14)))
 	if send_button != null:
-		send_button.add_theme_color_override("font_color", Color("eef4ff"))
+		send_button.add_theme_color_override("font_color", Color("c9d1d9"))
 	if cancel_button != null:
 		cancel_button.add_theme_color_override("font_color", muted)
 		cancel_button.flat = true
-	_apply_panel_style(page_panels.get("header"), chrome_bg, 12, 12)
-	_apply_panel_style(page_panels.get("conversation"), Color("151922"), 12, 12)
-	_apply_panel_style(page_panels.get("composer"), composer_bg, 22, 18)
-	_apply_panel_style(page_panels.get("sessions"), panel_bg, 12, 12)
-	_apply_panel_style(page_panels.get("sessions_active"), Color("151922"), 10, 10)
-	_apply_panel_style(page_panels.get("sessions_archived"), Color("151922"), 10, 10)
-	_apply_panel_style(page_panels.get("tool_result"), panel_bg, 12, 12)
-	_apply_panel_style(page_panels.get("review"), panel_bg, 12, 12)
-	_apply_panel_style(page_panels.get("settings_overview"), panel_bg, 12, 12)
-	_apply_panel_style(page_panels.get("settings"), panel_bg, 12, 12)
-	_apply_panel_style(page_panels.get("runtime_log"), panel_bg, 12, 12)
-	_apply_panel_style(page_panels.get("footer"), chrome_bg, 12, 10)
+	_apply_panel_style(page_panels.get("header"), chrome_bg, 0, 12)
+	_apply_panel_style(page_panels.get("conversation"), chrome_bg, 0, 12)
+	_apply_panel_style(page_panels.get("composer"), composer_bg, 10, 16)
+	_apply_panel_style(page_panels.get("sessions"), panel_bg, 10, 16)
+	_apply_panel_style(page_panels.get("sessions_active"), panel_bg, 8, 12)
+	_apply_panel_style(page_panels.get("sessions_archived"), panel_bg, 8, 12)
+	_apply_panel_style(page_panels.get("tool_result"), panel_bg, 10, 16)
+	_apply_panel_style(page_panels.get("review"), panel_bg, 10, 16)
+	_apply_panel_style(page_panels.get("settings_overview"), panel_bg, 10, 16)
+	_apply_panel_style(page_panels.get("settings"), panel_bg, 10, 16)
+	_apply_panel_style(page_panels.get("runtime_log"), panel_bg, 10, 16)
+	_apply_panel_style(page_panels.get("footer"), chrome_bg, 0, 12)
 	for button in nav_refs.get("buttons", []):
 		if button is Button:
 			button.flat = true
@@ -59,8 +72,8 @@ func paint_chrome(nav_refs: Dictionary, page_panels: Dictionary) -> void:
 
 
 func update_nav_state(nav_refs: Dictionary, current_page: int) -> void:
-	var active_text := Color("eef3fb")
-	var inactive_text := Color("a4adba")
+	var active_text := Color("c9d1d9")
+	var inactive_text := Color("8b949e")
 	var accent := _get_editor_accent()
 	var active_style := StyleBoxFlat.new()
 	active_style.bg_color = Color(0, 0, 0, 0)
@@ -89,6 +102,10 @@ func _apply_panel_style(node: Control, bg_color: Color, radius: int, margin: int
 		return
 	var style := StyleBoxFlat.new()
 	style.bg_color = bg_color
+	if radius > 0:
+		var accent := _get_editor_accent()
+		style.border_color = Color(accent.r, accent.g, accent.b, 0.1)
+		style.set_border_width_all(1)
 	style.corner_radius_top_left = radius
 	style.corner_radius_top_right = radius
 	style.corner_radius_bottom_left = radius
@@ -103,12 +120,13 @@ func _apply_panel_style(node: Control, bg_color: Color, radius: int, margin: int
 func _build_subtle_stylebox(bg_color: Color) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = bg_color
-	style.border_color = _mix_with(_get_editor_accent(), bg_color, 0.35)
+	var accent := _get_editor_accent()
+	style.border_color = Color(accent.r, accent.g, accent.b, 0.2)
 	style.set_border_width_all(1)
-	style.corner_radius_top_left = 8
-	style.corner_radius_top_right = 8
-	style.corner_radius_bottom_left = 8
-	style.corner_radius_bottom_right = 8
+	style.corner_radius_top_left = 10
+	style.corner_radius_top_right = 10
+	style.corner_radius_bottom_left = 10
+	style.corner_radius_bottom_right = 10
 	return style
 
 

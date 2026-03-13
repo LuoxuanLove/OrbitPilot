@@ -41,18 +41,13 @@ theme_override_constants/separation = 10
 [node name="Nav" type="HBoxContainer" parent="RootMargin/Root/Header/HeaderBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 12
 
 [node name="TabCodex" type="Button" parent="RootMargin/Root/Header/HeaderBox/Nav"]
 layout_mode = 2
 toggle_mode = true
 button_pressed = true
-text = "ORBITPILOT"
-
-[node name="SessionsButton" type="Button" parent="RootMargin/Root/Header/HeaderBox/Nav"]
-layout_mode = 2
-toggle_mode = true
-text = "SESSIONS"
+text = "CHAT"
 
 [node name="TabTools" type="Button" parent="RootMargin/Root/Header/HeaderBox/Nav"]
 layout_mode = 2
@@ -64,10 +59,23 @@ layout_mode = 2
 toggle_mode = true
 text = "REVIEW"
 
-[node name="TabSettings" type="Button" parent="RootMargin/Root/Header/HeaderBox/Nav"]
+[node name="ActionGroup" type="HBoxContainer" parent="RootMargin/Root/Header/HeaderBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="NewSessionButton" type="Button" parent="RootMargin/Root/Header/HeaderBox/ActionGroup"]
+layout_mode = 2
+tooltip_text = "New Session"
+
+[node name="TabSessions" type="Button" parent="RootMargin/Root/Header/HeaderBox/ActionGroup"]
 layout_mode = 2
 toggle_mode = true
-text = "SETTINGS"
+tooltip_text = "History / Sessions"
+
+[node name="TabSettings" type="Button" parent="RootMargin/Root/Header/HeaderBox/ActionGroup"]
+layout_mode = 2
+toggle_mode = true
+tooltip_text = "Settings"
 
 [node name="StatusPill" type="Label" parent="RootMargin/Root/Header/HeaderBox"]
 layout_mode = 2

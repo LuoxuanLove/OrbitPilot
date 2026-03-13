@@ -3,11 +3,11 @@ class_name DockController
 extends RefCounted
 
 const ChromePainter = preload("res://addons/orbit_pilot/ui/chrome_painter.gd")
-const OrbitPageCodex = preload("res://addons/orbit_pilot/ui/pages/page_codex.gd")
-const OrbitPageSessions = preload("res://addons/orbit_pilot/ui/pages/page_sessions.gd")
-const OrbitPageTools = preload("res://addons/orbit_pilot/ui/pages/page_tools.gd")
-const OrbitPageReview = preload("res://addons/orbit_pilot/ui/pages/page_review.gd")
-const OrbitPageSettings = preload("res://addons/orbit_pilot/ui/pages/page_settings.gd")
+const PAGE_CODEX_SCRIPT = preload("res://addons/orbit_pilot/ui/pages/page_codex.gd")
+const PAGE_SESSIONS_SCRIPT = preload("res://addons/orbit_pilot/ui/pages/page_sessions.gd")
+const PAGE_TOOLS_SCRIPT = preload("res://addons/orbit_pilot/ui/pages/page_tools.gd")
+const PAGE_REVIEW_SCRIPT = preload("res://addons/orbit_pilot/ui/pages/page_review.gd")
+const PAGE_SETTINGS_SCRIPT = preload("res://addons/orbit_pilot/ui/pages/page_settings.gd")
 
 signal save_settings_requested(payload: Dictionary)
 signal refresh_remote_tools_requested
@@ -32,18 +32,20 @@ var _root: Control
 var _current_page := PAGE_CODEX
 var _chrome_painter: ChromePainter
 var _tab_codex: Button
-var _sessions_button: Button
+var _tab_sessions: Button
 var _tab_tools: Button
 var _tab_review: Button
 var _tab_settings: Button
+var _new_session_button: Button
 var _page_stack: Control
 var _status_pill: Label
+
 var _status_label: Label
-var _codex_page: OrbitPageCodex
-var _sessions_page: OrbitPageSessions
-var _tools_page: OrbitPageTools
-var _review_page: OrbitPageReview
-var _settings_page: OrbitPageSettings
+var _codex_page: RefCounted
+var _sessions_page: RefCounted
+var _tools_page: RefCounted
+var _review_page: RefCounted
+var _settings_page: RefCounted
 
 
 func setup(editor_plugin: EditorPlugin, root: Control) -> void:
@@ -51,8 +53,9 @@ func setup(editor_plugin: EditorPlugin, root: Control) -> void:
 	_chrome_painter = ChromePainter.new()
 	_chrome_painter.setup(editor_plugin, _root)
 	_assign_nodes()
+	_apply_icons(editor_plugin)
 	_disable_auto_translate(_root)
-	_setup_pages()
+	_setup_pages(editor_plugin)
 	_bind_navigation()
 	_bind_page_signals()
 	_apply_chrome()
@@ -60,11 +63,16 @@ func setup(editor_plugin: EditorPlugin, root: Control) -> void:
 
 
 func apply_model(model: Dictionary) -> void:
-	_codex_page.apply_model(model)
-	_sessions_page.apply_model(model)
-	_tools_page.apply_model(model)
-	_review_page.apply_model(model)
-	_settings_page.apply_model(model)
+	if _codex_page != null and _codex_page.has_method("apply_model"):
+		_codex_page.apply_model(model)
+	if _sessions_page != null and _sessions_page.has_method("apply_model"):
+		_sessions_page.apply_model(model)
+	if _tools_page != null and _tools_page.has_method("apply_model"):
+		_tools_page.apply_model(model)
+	if _review_page != null and _review_page.has_method("apply_model"):
+		_review_page.apply_model(model)
+	if _settings_page != null and _settings_page.has_method("apply_model"):
+		_settings_page.apply_model(model)
 	var run_active := bool(model.get("is_run_active", false))
 	_status_label.text = str(model.get("status_text", "OrbitPilot ready"))
 	_status_pill.text = "Running" if run_active else "Ready"
@@ -76,53 +84,84 @@ func _node(path: String):
 
 func _assign_nodes() -> void:
 	_tab_codex = _node("RootMargin/Root/Header/HeaderBox/Nav/TabCodex")
-	_sessions_button = _node("RootMargin/Root/Header/HeaderBox/Nav/SessionsButton")
 	_tab_tools = _node("RootMargin/Root/Header/HeaderBox/Nav/TabTools")
 	_tab_review = _node("RootMargin/Root/Header/HeaderBox/Nav/TabReview")
-	_tab_settings = _node("RootMargin/Root/Header/HeaderBox/Nav/TabSettings")
+	_new_session_button = _node("RootMargin/Root/Header/HeaderBox/ActionGroup/NewSessionButton")
+	_tab_sessions = _node("RootMargin/Root/Header/HeaderBox/ActionGroup/TabSessions")
+	_tab_settings = _node("RootMargin/Root/Header/HeaderBox/ActionGroup/TabSettings")
 	_page_stack = _node("RootMargin/Root/PageStack")
 	_status_pill = _node("RootMargin/Root/Header/HeaderBox/StatusPill")
 	_status_label = _node("RootMargin/Root/Footer/FooterBox/StatusLabel")
 
 
-func _setup_pages() -> void:
-	_codex_page = OrbitPageCodex.new()
-	_codex_page.setup(_root)
-	_sessions_page = OrbitPageSessions.new()
-	_sessions_page.setup(_root)
-	_tools_page = OrbitPageTools.new()
-	_tools_page.setup(_root)
-	_review_page = OrbitPageReview.new()
-	_review_page.setup(_root)
-	_settings_page = OrbitPageSettings.new()
-	_settings_page.setup(_root)
+func _apply_icons(editor_plugin: EditorPlugin) -> void:
+	var theme := editor_plugin.get_editor_interface().get_editor_theme()
+	if theme.has_icon("Add", "EditorIcons"):
+		_new_session_button.icon = theme.get_icon("Add", "EditorIcons")
+	if theme.has_icon("History", "EditorIcons"):
+		_tab_sessions.icon = theme.get_icon("History", "EditorIcons")
+	if theme.has_icon("Tools", "EditorIcons"):
+		_tab_settings.icon = theme.get_icon("Tools", "EditorIcons")
+
+
+func _setup_pages(editor_plugin: EditorPlugin) -> void:
+	_codex_page = _instantiate_page(PAGE_CODEX_SCRIPT)
+	if _codex_page != null:
+		_codex_page.setup(_node("RootMargin/Root/PageStack/PageCodex"), editor_plugin)
+	_sessions_page = _instantiate_page(PAGE_SESSIONS_SCRIPT)
+	if _sessions_page != null:
+		_sessions_page.setup(_node("RootMargin/Root/PageStack/PageSessions"))
+	_tools_page = _instantiate_page(PAGE_TOOLS_SCRIPT)
+	if _tools_page != null:
+		_tools_page.setup(_node("RootMargin/Root/PageStack/PageTools"))
+	_review_page = _instantiate_page(PAGE_REVIEW_SCRIPT)
+	if _review_page != null:
+		_review_page.setup(_node("RootMargin/Root/PageStack/PageReview"))
+	_settings_page = _instantiate_page(PAGE_SETTINGS_SCRIPT)
+	if _settings_page != null:
+		_settings_page.setup(_node("RootMargin/Root/PageStack/PageSettings"))
+
+
+func _instantiate_page(script_ref: GDScript) -> RefCounted:
+	if script_ref == null:
+		return null
+	if not script_ref.can_instantiate():
+		return null
+	return script_ref.new()
 
 
 func _bind_navigation() -> void:
 	_tab_codex.pressed.connect(_on_tab_codex_pressed)
-	_sessions_button.pressed.connect(_on_tab_sessions_pressed)
+	_tab_sessions.pressed.connect(_on_tab_sessions_pressed)
 	_tab_tools.pressed.connect(_on_tab_tools_pressed)
 	_tab_review.pressed.connect(_on_tab_review_pressed)
 	_tab_settings.pressed.connect(_on_tab_settings_pressed)
+	_new_session_button.pressed.connect(_on_session_create_requested)
 
 
 func _bind_page_signals() -> void:
-	_codex_page.send_prompt_requested.connect(_on_send_prompt_requested)
-	_codex_page.cancel_run_requested.connect(_on_cancel_run_requested)
-	_codex_page.provider_selected_requested.connect(_on_provider_selected_requested)
-	_codex_page.session_selected_requested.connect(_on_session_selected_requested)
+	if _codex_page != null:
+		_codex_page.send_prompt_requested.connect(_on_send_prompt_requested)
+		_codex_page.cancel_run_requested.connect(_on_cancel_run_requested)
+		_codex_page.provider_selected_requested.connect(_on_provider_selected_requested)
+		_codex_page.session_selected_requested.connect(_on_session_selected_requested)
 
-	_sessions_page.session_create_requested.connect(_on_session_create_requested)
-	_sessions_page.session_open_requested.connect(_on_session_open_requested)
-	_sessions_page.session_archive_requested.connect(_on_session_archive_requested)
-	_sessions_page.session_delete_requested.connect(_on_session_delete_requested)
-	_sessions_page.session_rename_requested.connect(_on_session_rename_requested)
+	if _sessions_page != null:
+		_sessions_page.session_create_requested.connect(_on_session_create_requested)
+		_sessions_page.session_open_requested.connect(_on_session_open_requested)
+		_sessions_page.session_archive_requested.connect(_on_session_archive_requested)
+		_sessions_page.session_delete_requested.connect(_on_session_delete_requested)
+		_sessions_page.session_rename_requested.connect(_on_session_rename_requested)
 
-	_tools_page.run_tool_requested.connect(_on_run_tool_requested)
-	_review_page.approve_change_set_requested.connect(_on_approve_change_set_requested)
+	if _tools_page != null:
+		_tools_page.run_tool_requested.connect(_on_run_tool_requested)
 
-	_settings_page.save_settings_requested.connect(_on_save_settings_requested)
-	_settings_page.refresh_remote_tools_requested.connect(_on_refresh_remote_tools_requested)
+	if _review_page != null:
+		_review_page.approve_change_set_requested.connect(_on_approve_change_set_requested)
+
+	if _settings_page != null:
+		_settings_page.save_settings_requested.connect(_on_save_settings_requested)
+		_settings_page.refresh_remote_tools_requested.connect(_on_refresh_remote_tools_requested)
 
 
 func _on_tab_codex_pressed() -> void:
@@ -217,13 +256,17 @@ func _apply_nav_state() -> void:
 
 
 func _build_nav_refs() -> Dictionary:
-	var codex_refs := _codex_page.get_chrome_refs()
-	var settings_refs := _settings_page.get_chrome_refs()
+	var codex_refs := {}
+	if _codex_page != null and _codex_page.has_method("get_chrome_refs"):
+		codex_refs = _codex_page.get_chrome_refs()
+	var settings_refs := {}
+	if _settings_page != null and _settings_page.has_method("get_chrome_refs"):
+		settings_refs = _settings_page.get_chrome_refs()
 	return {
-		"buttons": [_tab_codex, _sessions_button, _tab_tools, _tab_review, _tab_settings],
+		"buttons": [_tab_codex, _tab_tools, _tab_review, _new_session_button, _tab_sessions, _tab_settings],
 		"button_states": [
 			{"button": _tab_codex, "page": PAGE_CODEX},
-			{"button": _sessions_button, "page": PAGE_SESSIONS},
+			{"button": _tab_sessions, "page": PAGE_SESSIONS},
 			{"button": _tab_tools, "page": PAGE_TOOLS},
 			{"button": _tab_review, "page": PAGE_REVIEW},
 			{"button": _tab_settings, "page": PAGE_SETTINGS},
@@ -239,11 +282,16 @@ func _build_nav_refs() -> Dictionary:
 
 func _build_page_panels() -> Dictionary:
 	var panels := {"header": _node("RootMargin/Root/Header"), "footer": _node("RootMargin/Root/Footer")}
-	panels.merge(_codex_page.get_chrome_panels())
-	panels.merge(_sessions_page.get_chrome_panels())
-	panels.merge(_tools_page.get_chrome_panels())
-	panels.merge(_review_page.get_chrome_panels())
-	panels.merge(_settings_page.get_chrome_panels())
+	if _codex_page != null and _codex_page.has_method("get_chrome_panels"):
+		panels.merge(_codex_page.get_chrome_panels())
+	if _sessions_page != null and _sessions_page.has_method("get_chrome_panels"):
+		panels.merge(_sessions_page.get_chrome_panels())
+	if _tools_page != null and _tools_page.has_method("get_chrome_panels"):
+		panels.merge(_tools_page.get_chrome_panels())
+	if _review_page != null and _review_page.has_method("get_chrome_panels"):
+		panels.merge(_review_page.get_chrome_panels())
+	if _settings_page != null and _settings_page.has_method("get_chrome_panels"):
+		panels.merge(_settings_page.get_chrome_panels())
 	return panels
 
 

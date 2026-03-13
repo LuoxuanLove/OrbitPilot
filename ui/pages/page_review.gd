@@ -46,17 +46,25 @@ func _node(path: String):
 
 
 func _assign_nodes() -> void:
-	_change_set_select = _node("RootMargin/Root/PageStack/PageReview/ChangeSetSelect")
-	_change_set_preview_panel = _node("RootMargin/Root/PageStack/PageReview/ChangeSetPreviewPanel")
-	_change_set_preview = _node("RootMargin/Root/PageStack/PageReview/ChangeSetPreviewPanel/ChangeSetPreview")
-	_approve_button = _node("RootMargin/Root/PageStack/PageReview/ReviewButtons/ApproveButton")
-	_reject_button = _node("RootMargin/Root/PageStack/PageReview/ReviewButtons/RejectButton")
+	if _root == null:
+		push_error("[OrbitPageReview] _root is null in _assign_nodes")
+		return
+	_change_set_select = _node("ChangeSetSelect")
+	_change_set_preview_panel = _node("ChangeSetPreviewPanel")
+	_change_set_preview = _node("ChangeSetPreviewPanel/ChangeSetPreview")
+	_approve_button = _node("ReviewButtons/ApproveButton")
+	_reject_button = _node("ReviewButtons/RejectButton")
 
 
 func _bind_events() -> void:
+	if _change_set_select == null:
+		push_error("[OrbitPageReview] _change_set_select is null in _bind_events")
+		return
 	_change_set_select.item_selected.connect(_on_change_set_selected)
-	_approve_button.pressed.connect(func() -> void: _on_approve_changed(true))
-	_reject_button.pressed.connect(func() -> void: _on_approve_changed(false))
+	if _approve_button:
+		_approve_button.pressed.connect(func() -> void: _on_approve_changed(true))
+	if _reject_button:
+		_reject_button.pressed.connect(func() -> void: _on_approve_changed(false))
 
 
 func _on_change_set_selected(index: int) -> void:

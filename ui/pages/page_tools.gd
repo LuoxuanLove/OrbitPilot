@@ -43,16 +43,21 @@ func _node(path: String):
 
 
 func _assign_nodes() -> void:
-	_tool_select = _node("RootMargin/Root/PageStack/PageTools/ToolSelect")
-	_tool_args_edit = _node("RootMargin/Root/PageStack/PageTools/ToolArgsEdit")
-	_run_tool_button = _node("RootMargin/Root/PageStack/PageTools/RunToolButton")
-	_tool_result_panel = _node("RootMargin/Root/PageStack/PageTools/ToolResultPanel")
-	_tool_result = _node("RootMargin/Root/PageStack/PageTools/ToolResultPanel/ToolResult")
+	if _root == null:
+		push_error("[OrbitPageTools] _root is null in _assign_nodes")
+		return
+	_tool_select = _node("ToolSelect")
+	_tool_args_edit = _node("ToolArgsEdit")
+	_run_tool_button = _node("RunToolButton")
+	_tool_result_panel = _node("ToolResultPanel")
+	_tool_result = _node("ToolResultPanel/ToolResult")
 
 
 func _bind_events() -> void:
-	_run_tool_button.pressed.connect(_on_run_tool_pressed)
-	_tool_select.item_selected.connect(_on_tool_selected)
+	if _run_tool_button:
+		_run_tool_button.pressed.connect(_on_run_tool_pressed)
+	if _tool_select:
+		_tool_select.item_selected.connect(_on_tool_selected)
 
 
 func _apply_tool_result(model: Dictionary) -> void:
