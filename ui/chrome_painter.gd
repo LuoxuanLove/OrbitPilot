@@ -22,7 +22,6 @@ func paint_chrome(nav_refs: Dictionary, page_panels: Dictionary) -> void:
 	var runtime_log: RichTextLabel = nav_refs.get("runtime_log")
 	var session_picker: OptionButton = nav_refs.get("session_picker")
 	var send_button: Button = nav_refs.get("send_button")
-	var cancel_button: Button = nav_refs.get("cancel_button")
 	if status_pill != null:
 		status_pill.add_theme_color_override("font_color", accent)
 	if validation_badge != null:
@@ -50,12 +49,14 @@ func paint_chrome(nav_refs: Dictionary, page_panels: Dictionary) -> void:
 		session_picker.add_theme_stylebox_override("focus", _build_subtle_stylebox(_mix_with(accent, chrome_bg, 0.14)))
 	if send_button != null:
 		send_button.add_theme_color_override("font_color", Color("c9d1d9"))
-	if cancel_button != null:
-		cancel_button.add_theme_color_override("font_color", muted)
-		cancel_button.flat = true
-	_apply_panel_style(page_panels.get("header"), chrome_bg, 0, 12)
-	_apply_panel_style(page_panels.get("conversation"), chrome_bg, 0, 12)
-	_apply_panel_style(page_panels.get("composer"), composer_bg, 10, 16)
+	_apply_panel_style(page_panels.get("header"), chrome_bg, 12, 12)
+	_apply_panel_style(page_panels.get("conversation"), chrome_bg, 12, 12)
+	# ScrollContainer 内部背景透明，由 ConversationPanel 提供背景色
+	var conv_scroll = page_panels.get("conversation_scroll")
+	if conv_scroll != null:
+		apply_transparent_bg(conv_scroll)
+	_apply_panel_style(page_panels.get("composer"), composer_bg, 16, 16)
+	_apply_rounding_to_control(nav_refs.get("prompt_edit"), composer_bg, 12)
 	_apply_panel_style(page_panels.get("sessions"), panel_bg, 10, 16)
 	_apply_panel_style(page_panels.get("sessions_active"), panel_bg, 8, 12)
 	_apply_panel_style(page_panels.get("sessions_archived"), panel_bg, 8, 12)
@@ -64,25 +65,46 @@ func paint_chrome(nav_refs: Dictionary, page_panels: Dictionary) -> void:
 	_apply_panel_style(page_panels.get("settings_overview"), panel_bg, 10, 16)
 	_apply_panel_style(page_panels.get("settings"), panel_bg, 10, 16)
 	_apply_panel_style(page_panels.get("runtime_log"), panel_bg, 10, 16)
-	_apply_panel_style(page_panels.get("footer"), chrome_bg, 0, 12)
+	_apply_panel_style(page_panels.get("footer"), chrome_bg, 12, 12)
 	for button in nav_refs.get("buttons", []):
 		if button is Button:
 			button.flat = true
 			button.focus_mode = Control.FOCUS_NONE
+			button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 
 func update_nav_state(nav_refs: Dictionary, current_page: int) -> void:
 	var active_text := Color("c9d1d9")
 	var inactive_text := Color("8b949e")
 	var accent := _get_editor_accent()
+	var panel_bg := Color("161b22")
+	
 	var active_style := StyleBoxFlat.new()
-	active_style.bg_color = Color(0, 0, 0, 0)
+	active_style.bg_color = panel_bg
 	active_style.border_color = accent
 	active_style.set_border_width_all(0)
 	active_style.border_width_bottom = 2
+	active_style.corner_radius_top_left = 10
+	active_style.corner_radius_top_right = 10
+	active_style.content_margin_left = 12
+	active_style.content_margin_right = 12
+	
 	var inactive_style := StyleBoxFlat.new()
 	inactive_style.bg_color = Color(0, 0, 0, 0)
 	inactive_style.set_border_width_all(0)
+	inactive_style.corner_radius_top_left = 10
+	inactive_style.corner_radius_top_right = 10
+	inactive_style.content_margin_left = 12
+	inactive_style.content_margin_right = 12
+	
+	var hover_style := StyleBoxFlat.new()
+	hover_style.bg_color = Color(panel_bg.r, panel_bg.g, panel_bg.b, 0.4)
+	hover_style.set_border_width_all(0)
+	hover_style.corner_radius_top_left = 10
+	hover_style.corner_radius_top_right = 10
+	hover_style.content_margin_left = 12
+	hover_style.content_margin_right = 12
+	
 	for item in nav_refs.get("button_states", []):
 		if not (item is Dictionary):
 			continue
@@ -93,8 +115,16 @@ func update_nav_state(nav_refs: Dictionary, current_page: int) -> void:
 		button.button_pressed = is_active
 		button.add_theme_color_override("font_color", active_text if is_active else inactive_text)
 		button.add_theme_stylebox_override("normal", active_style if is_active else inactive_style)
-		button.add_theme_stylebox_override("hover", active_style if is_active else inactive_style)
-		button.add_theme_stylebox_override("pressed", active_style if is_active else inactive_style)
+		button.add_theme_stylebox_override("hover", active_style if is_active else hover_style)
+		button.add_theme_stylebox_override("pressed", active_style)
+
+
+func apply_transparent_bg(node: Control) -> void:
+	if node == null:
+		return
+	var style := StyleBoxEmpty.new()
+	node.add_theme_stylebox_override("panel", style)
+	node.add_theme_stylebox_override("bg", style)
 
 
 func _apply_panel_style(node: Control, bg_color: Color, radius: int, margin: int) -> void:
@@ -104,7 +134,7 @@ func _apply_panel_style(node: Control, bg_color: Color, radius: int, margin: int
 	style.bg_color = bg_color
 	if radius > 0:
 		var accent := _get_editor_accent()
-		style.border_color = Color(accent.r, accent.g, accent.b, 0.1)
+		style.border_color = Color(accent.r, accent.g, accent.b, 0.15)
 		style.set_border_width_all(1)
 	style.corner_radius_top_left = radius
 	style.corner_radius_top_right = radius
@@ -115,6 +145,20 @@ func _apply_panel_style(node: Control, bg_color: Color, radius: int, margin: int
 	style.content_margin_right = margin
 	style.content_margin_bottom = margin
 	node.add_theme_stylebox_override("panel", style)
+
+
+func _apply_rounding_to_control(node: Control, bg_color: Color, radius: int) -> void:
+	if node == null:
+		return
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.corner_radius_top_left = radius
+	style.corner_radius_top_right = radius
+	style.corner_radius_bottom_left = radius
+	style.corner_radius_bottom_right = radius
+	style.set_border_width_all(0)
+	node.add_theme_stylebox_override("normal", style)
+	node.add_theme_stylebox_override("focus", style)
 
 
 func _build_subtle_stylebox(bg_color: Color) -> StyleBoxFlat:

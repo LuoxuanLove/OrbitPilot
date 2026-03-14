@@ -33,20 +33,23 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ConversationLog" type="RichTextLabel" parent="ConversationPanel"]
-custom_minimum_size = Vector2(0, 0)
+[node name="ConversationScroll" type="ScrollContainer" parent="ConversationPanel"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-bbcode_enabled = true
-scroll_following = true
+follow_focus = true
+
+[node name="ConversationList" type="VBoxContainer" parent="ConversationPanel/ConversationScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
 
 [node name="ComposerMargin" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
 
 [node name="ComposerPanel" type="PanelContainer" parent="ComposerMargin"]
 custom_minimum_size = Vector2(0, 160)
@@ -79,11 +82,6 @@ layout_mode = 2
 custom_minimum_size = Vector2(140, 0)
 flat = true
 
-[node name="LanguageSelect" type="OptionButton" parent="ComposerMargin/ComposerPanel/Composer/ComposerFooter"]
-layout_mode = 2
-custom_minimum_size = Vector2(80, 0)
-flat = true
-
 [node name="ContextToggle" type="Button" parent="ComposerMargin/ComposerPanel/Composer/ComposerFooter"]
 layout_mode = 2
 toggle_mode = true
@@ -106,11 +104,6 @@ layout_mode = 2
 alignment = 2
 theme_override_constants/separation = 4
 
-[node name="CancelRunButton" type="Button" parent="ComposerMargin/ComposerPanel/Composer/ComposerFooter/ComposerActions"]
-layout_mode = 2
-flat = true
-
 [node name="SendPromptButton" type="Button" parent="ComposerMargin/ComposerPanel/Composer/ComposerFooter/ComposerActions"]
 layout_mode = 2
 custom_minimum_size = Vector2(32, 32)
-text = "Send"

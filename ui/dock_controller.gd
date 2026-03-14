@@ -8,6 +8,7 @@ const PAGE_SESSIONS_SCRIPT = preload("res://addons/orbit_pilot/ui/pages/page_ses
 const PAGE_TOOLS_SCRIPT = preload("res://addons/orbit_pilot/ui/pages/page_tools.gd")
 const PAGE_REVIEW_SCRIPT = preload("res://addons/orbit_pilot/ui/pages/page_review.gd")
 const PAGE_SETTINGS_SCRIPT = preload("res://addons/orbit_pilot/ui/pages/page_settings.gd")
+const Localizer = preload("res://addons/orbit_pilot/core/utils/localizer.gd")
 
 signal save_settings_requested(payload: Dictionary)
 signal refresh_remote_tools_requested
@@ -59,7 +60,28 @@ func setup(editor_plugin: EditorPlugin, root: Control) -> void:
 	_bind_navigation()
 	_bind_page_signals()
 	_apply_chrome()
+	refresh_translations()
 	_set_page(PAGE_CODEX)
+
+
+func refresh_translations() -> void:
+	_tab_codex.text = Localizer.t("TAB_CHAT")
+	_tab_tools.text = Localizer.t("TAB_TOOLS")
+	_tab_review.text = Localizer.t("TAB_REVIEW")
+	_new_session_button.tooltip_text = Localizer.t("TIP_NEW_SESSION")
+	_tab_sessions.tooltip_text = Localizer.t("TIP_SESSIONS")
+	_tab_settings.tooltip_text = Localizer.t("TIP_SETTINGS")
+	
+	if _codex_page != null and _codex_page.has_method("refresh_translations"):
+		_codex_page.refresh_translations()
+	if _sessions_page != null and _sessions_page.has_method("refresh_translations"):
+		_sessions_page.refresh_translations()
+	if _tools_page != null and _tools_page.has_method("refresh_translations"):
+		_tools_page.refresh_translations()
+	if _review_page != null and _review_page.has_method("refresh_translations"):
+		_review_page.refresh_translations()
+	if _settings_page != null and _settings_page.has_method("refresh_translations"):
+		_settings_page.refresh_translations()
 
 
 func apply_model(model: Dictionary) -> void:
@@ -74,8 +96,8 @@ func apply_model(model: Dictionary) -> void:
 	if _settings_page != null and _settings_page.has_method("apply_model"):
 		_settings_page.apply_model(model)
 	var run_active := bool(model.get("is_run_active", false))
-	_status_label.text = str(model.get("status_text", "OrbitPilot ready"))
-	_status_pill.text = "Running" if run_active else "Ready"
+	_status_label.text = str(model.get("status_text", Localizer.t("STATUS_READY")))
+	_status_pill.text = Localizer.t("STATUS_RUNNING") if run_active else Localizer.t("STATUS_READY_PILL")
 
 
 func _node(path: String):
@@ -162,6 +184,7 @@ func _bind_page_signals() -> void:
 	if _settings_page != null:
 		_settings_page.save_settings_requested.connect(_on_save_settings_requested)
 		_settings_page.refresh_remote_tools_requested.connect(_on_refresh_remote_tools_requested)
+		_settings_page.language_selected_requested.connect(_on_language_selected_requested)
 
 
 func _on_tab_codex_pressed() -> void:
@@ -222,6 +245,11 @@ func _on_run_tool_requested(tool_id: String, args_json: String) -> void:
 
 func _on_approve_change_set_requested(change_set_id: String, approved: bool) -> void:
 	emit_signal("approve_change_set_requested", change_set_id, approved)
+
+
+func _on_language_selected_requested(lang: String) -> void:
+	Localizer.set_language(lang)
+	refresh_translations()
 
 
 func _on_save_settings_requested(payload: Dictionary) -> void:
