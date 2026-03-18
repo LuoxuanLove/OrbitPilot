@@ -1,0 +1,3 @@
+# 仅将 addons/ 目录打包进 Asset Library ZIP
+/*             export-ignore
+/addons        !export-ignore
